@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snake Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Snake Game</h1>
-  <p id="scoreDisplay">Score: 0</p>
-  <canvas id="gameCanvas" width="600" height="600"></canvas>
-  <br>
-  <button id="retryBtn" onclick="restartGame()" style="display:none;">Retry</button>
+  <canvas id="gameCanvas"></canvas>
+  <div id="score">Score: 0</div>
+  <button id="retry">Retry</button>
 
-  <!-- Sound effects -->
-  <audio id="eatSound" src="eat.mp3" preload="auto"></audio>
-  <audio id="gameOverSound" src="gameover.mp3" preload="auto"></audio>
+  <!-- On-screen controls for mobile -->
+  <div id="controls">
+    <button class="ctrl" onclick="setDirection('up')">⬆️</button><br>
+    <button class="ctrl" onclick="setDirection('left')">⬅️</button>
+    <button class="ctrl" onclick="setDirection('down')">⬇️</button>
+    <button class="ctrl" onclick="setDirection('right')">➡️</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
