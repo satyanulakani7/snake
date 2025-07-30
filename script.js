@@ -1,67 +1,46 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const retryBtn = document.getElementById("retryBtn");
-const scoreDisplay = document.getElementById("scoreDisplay");
-const eatSound = document.getElementById("eatSound");
-const gameOverSound = document.getElementById("gameOverSound");
+canvas.width = 400;
+canvas.height = 400;
 
-const gridSize = 20;
-const tileCount = canvas.width / gridSize;
+let box = 20;
+let snake = [{ x: 160, y: 160 }];
+let food = spawnFood();
+let direction = "right";
+let score = 0;
+let game;
+let gameOverSound = new Audio("https://www.soundjay.com/button/sounds/button-10.mp3");
 
-let snake;
-let food;
-let dx;
-let dy;
-let score;
-let gameInterval;
+function draw() {
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-function initGame() {
-  snake = [{ x: 10, y: 10 }];
-  food = {
-    x: Math.floor(Math.random() * tileCount),
-    y: Math.floor(Math.random() * tileCount),
-  };
-  dx = 1;
-  dy = 0;
-  score = 0;
-  updateScore();
-  retryBtn.style.display = "none";
-
-  if (gameInterval) clearInterval(gameInterval);
-  gameInterval = setInterval(gameLoop, 100);
-}
-
-function updateScore() {
-  scoreDisplay.textContent = "Score: " + score;
-}
-
-document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "ArrowUp": if (dy === 0) { dx = 0; dy = -1; } break;
-    case "ArrowDown": if (dy === 0) { dx = 0; dy = 1; } break;
-    case "ArrowLeft": if (dx === 0) { dx = -1; dy = 0; } break;
-    case "ArrowRight": if (dx === 0) { dx = 1; dy = 0; } break;
+  // Draw snake
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = i === 0 ? "lime" : "lightgreen";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
   }
-});
 
-// Get rainbow color for each segment
-function getRainbowColor(index) {
-  const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
-  return colors[index % colors.length];
-}
+  // Draw food
+  ctx.fillStyle = "red";
+  ctx.fillRect(food.x, food.y, box, box);
 
-function gameLoop() {
-  const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+  // Move snake
+  let head = { ...snake[0] };
+  if (direction === "left") head.x -= box;
+  if (direction === "right") head.x += box;
+  if (direction === "up") head.y -= box;
+  if (direction === "down") head.y += box;
 
+  // Game over
   if (
-    head.x < 0 || head.x >= tileCount ||
-    head.y < 0 || head.y >= tileCount ||
-    snake.some((s) => s.x === head.x && s.y === head.y)
+    head.x < 0 || head.y < 0 ||
+    head.x >= canvas.width || head.y >= canvas.height ||
+    collision(head, snake)
   ) {
-    clearInterval(gameInterval);
+    clearInterval(game);
     gameOverSound.play();
-    retryBtn.style.display = "inline-block";
-    alert("Game Over! Your final score: " + score);
+    alert("Game Over! Score: " + score);
     return;
   }
 
@@ -69,32 +48,46 @@ function gameLoop() {
 
   if (head.x === food.x && head.y === food.y) {
     score++;
-    updateScore();
-    eatSound.play();
-    food = {
-      x: Math.floor(Math.random() * tileCount),
-      y: Math.floor(Math.random() * tileCount),
-    };
+    document.getElementById("score").innerText = "Score: " + score;
+    food = spawnFood();
   } else {
     snake.pop();
   }
-
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw rainbow-colored snake
-  for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = getRainbowColor(i + score); // shift color as it grows
-    ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
-  }
-
-  // Draw food
-  ctx.fillStyle = "white";
-  ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 }
 
-function restartGame() {
-  initGame();
+function collision(head, array) {
+  return array.slice(1).some(seg => seg.x === head.x && seg.y === head.y);
 }
 
-initGame();
+function spawnFood() {
+  return {
+    x: Math.floor(Math.random() * (canvas.width / box)) * box,
+    y: Math.floor(Math.random() * (canvas.height / box)) * box
+  };
+}
+
+function setDirection(dir) {
+  if (dir === "left" && direction !== "right") direction = "left";
+  if (dir === "right" && direction !== "left") direction = "right";
+  if (dir === "up" && direction !== "down") direction = "up";
+  if (dir === "down" && direction !== "up") direction = "down";
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") setDirection("left");
+  if (e.key === "ArrowRight") setDirection("right");
+  if (e.key === "ArrowUp") setDirection("up");
+  if (e.key === "ArrowDown") setDirection("down");
+});
+
+document.getElementById("retry").onclick = () => {
+  snake = [{ x: 160, y: 160 }];
+  direction = "right";
+  score = 0;
+  document.getElementById("score").innerText = "Score: 0";
+  food = spawnFood();
+  clearInterval(game);
+  game = setInterval(draw, 120);
+};
+
+game = setInterval(draw, 120);
