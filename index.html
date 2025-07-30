@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Snake Game</h1>
+  <p id="scoreDisplay">Score: 0</p>
+  <canvas id="gameCanvas" width="600" height="600"></canvas>
+  <br>
+  <button id="retryBtn" onclick="restartGame()" style="display:none;">Retry</button>
+
+  <!-- Sound effects -->
+  <audio id="eatSound" src="eat.mp3" preload="auto"></audio>
+  <audio id="gameOverSound" src="gameover.mp3" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>

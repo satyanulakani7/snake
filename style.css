@@ -1,0 +1,24 @@
+body {
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+  margin-top: 30px;
+}
+
+canvas {
+  background-color: #000;
+  border: 2px solid #fff;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#scoreDisplay {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
